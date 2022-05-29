@@ -1,4 +1,4 @@
-use ndarray::{Array2,Array};
+use ndarray::{Array2,Array, array};
 
 #[derive(Debug)]
 pub struct NeuralNet<T>
@@ -13,6 +13,7 @@ where
 
 impl NeuralNet<fn(f64) -> f64>
 {
+    // TODO: Maybe make all fields private and provided specified-weights constructor? 
     fn new_ones(nodes: Vec<usize>) -> Self{
         let mut weights = Vec::new();
         for shape in nodes.windows(2){
@@ -30,6 +31,21 @@ impl NeuralNet<fn(f64) -> f64>
     }
 }
 
+impl<T> NeuralNet<T>
+where
+    T: Fn(f64) -> f64,
+{
+    // TODO: Appropriately error if a network is invalid (wrong weight matrix shapes, for example). 
+    fn solve_fwd(&self, input: Array2<f64>) -> Result<Array2<f64>, &str>{
+        let mut acts = input.clone();
+        for (i, weight) in self.weights.iter().enumerate() {
+            acts = (weight.dot(&acts) + &self.bias[i]).map(|x| {
+                (self.activation)(*x)
+            })
+        }
+        Ok(acts)
+    }
+}
 
 #[cfg(test)]
 mod tests{
@@ -44,5 +60,16 @@ mod tests{
         assert_eq!(new.bias[1].shape(), &[4,1]);
         assert_eq!(new.bias[2].shape(), &[1,1]);
 
+    }
+    #[test]
+    fn test_solve(){
+        let net = NeuralNet{
+            weights: vec![array![[1.0,1.0],[2.0,2.0]], array![[1.0,1.0]]],
+            bias: vec![array![[0.0],[0.0]], array![[0.0]]],
+            activation: crate::activations::relu
+        };
+        let inputs = array![[3.0],[4.0]];
+        let soln = net.solve_fwd(inputs);
+        assert_eq!(soln, Ok(array![[21.0]]))
     }
 }
