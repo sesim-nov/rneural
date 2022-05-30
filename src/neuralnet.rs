@@ -38,10 +38,24 @@ where
     // TODO: Appropriately error if a network is invalid (wrong weight matrix shapes, for example). 
     fn solve_fwd(&self, input: Array2<f64>) -> Result<Array2<f64>, &str>{
         let mut acts = input.clone();
-        for (i, weight) in self.weights.iter().enumerate() {
-            acts = (weight.dot(&acts) + &self.bias[i]).map(|x| {
-                (self.activation)(*x)
-            })
+        let num_weights = self.weights.len();
+        for (i, weight) in self.weights.iter().enumerate() 
+        {
+            acts = 
+            {
+                let unact = weight.dot(&acts) + &self.bias[i];
+                // Avoid applying activation to the output layer. 
+                if num_weights - 1 == i 
+                {
+                    unact
+                }
+                else 
+                {
+                    unact.map(|x| {
+                        (self.activation)(*x)
+                    })
+                }
+            };
         }
         Ok(acts)
     }
