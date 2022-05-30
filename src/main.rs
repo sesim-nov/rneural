@@ -8,9 +8,35 @@
 
 use rneural::neuralnet::NeuralNet;
 use ndarray::array;
+use std::env;
+use std::error::Error;
+use std::fs::File;
+
+fn run() -> Result<(), Box<dyn Error>> {
+    let path = get_first_arg()?;
+    let file = File::open(path)?;
+    let mut csvrdr = csv::ReaderBuilder::new()
+        .delimiter(b',')
+        .from_reader(file);
+    for record in csvrdr.records() {
+        let record = record?;
+        println!("{:?}", record);
+    }
+    Ok(())
+}
 
 fn main() {
-    rneural::helo();
+    if let Err(e) = run() {
+        println!("{:?}", e);
+        std::process::exit(1);
+    }
+}
+
+fn get_first_arg() -> Result<String, Box<dyn Error>>{
+    match env::args().nth(1) {
+        None => Err("No file path argument provided.".into()),
+        Some(x) => Ok(x),
+    }
 }
 
 
