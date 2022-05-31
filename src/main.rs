@@ -7,10 +7,53 @@
 //   * Lookup backpropagation stuff. 
 
 use rneural::neuralnet::NeuralNet;
-use ndarray::array;
+use ndarray::{array, Array2};
 use std::env;
 use std::error::Error;
 use std::fs::File;
+use serde::Deserialize;
+use rneural::neuralnet::NetRecord;
+
+#[derive(Debug, Deserialize)]
+struct HousePrice {
+    crim: f64,
+    zn: f64,
+    indus: f64,
+    chas: f64,
+    nox: f64,
+    rm: f64,
+    age: f64,
+    dis: f64,
+    rad: f64,
+    tax: f64,
+    ptratio: f64,
+    medv: f64,
+    b: f64,
+    lstat: f64
+}
+
+impl NetRecord for HousePrice {
+    fn get_inputs(&self) -> Array2<f64> {
+        array![
+            [self.crim],
+            [self.zn],
+            [self.indus],
+            [self.chas],
+            [self.nox],
+            [self.rm],
+            [self.age],
+            [self.dis],
+            [self.rad],
+            [self.tax],
+            [self.ptratio],
+            [self.b],
+            [self.lstat],
+        ]
+    }
+    fn get_outputs(&self) -> Array2<f64> {
+        array![[self.medv]]
+    }
+}
 
 fn run() -> Result<(), Box<dyn Error>> {
     let path = get_first_arg()?;
@@ -18,9 +61,10 @@ fn run() -> Result<(), Box<dyn Error>> {
     let mut csvrdr = csv::ReaderBuilder::new()
         .delimiter(b',')
         .from_reader(file);
-    for record in csvrdr.records() {
-        let record = record?;
-        println!("{:?}", record);
+    let net = NeuralNet::new_rand(vec![13,20,10,1]);
+    for record in csvrdr.deserialize() {
+        let record: HousePrice = record?;
+        println!("{:?}:{:?}", record.get_outputs() ,net.solve_fwd(record.get_inputs()))
     }
     Ok(())
 }
@@ -38,7 +82,6 @@ fn get_first_arg() -> Result<String, Box<dyn Error>>{
         Some(x) => Ok(x),
     }
 }
-
 
 #[cfg(test)]
 mod tests {
