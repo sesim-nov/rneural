@@ -6,13 +6,12 @@
 //   * Activation functions (mostly done)
 //   * Lookup backpropagation stuff. 
 
-use rneural::neuralnet::NeuralNet;
+use rneural::neuralnet::{NeuralNet, NetRecord};
 use ndarray::{array, Array2};
 use std::env;
 use std::error::Error;
 use std::fs::File;
 use serde::Deserialize;
-use rneural::neuralnet::NetRecord;
 
 #[derive(Debug, Deserialize)]
 struct HousePrice {
