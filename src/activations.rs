@@ -7,13 +7,12 @@ trait Activation {
 
 struct Relu(());
 
-impl Activation for Relu{
+impl Activation for Relu {
     fn act(x: f64) -> f64 {
         ensure_finite(x);
         if x < 0.0 {
             0.0
-        }
-        else {
+        } else {
             x
         }
     }
@@ -29,7 +28,7 @@ impl Activation for Relu{
 }
 
 fn ensure_finite(x: f64) -> () {
-    if !x.is_finite(){
+    if !x.is_finite() {
         panic!("Activation is not finite!");
     }
 }
@@ -38,8 +37,7 @@ pub fn relu(x: f64) -> f64 {
     ensure_finite(x);
     if x < 0.0 {
         0.0
-    }
-    else {
+    } else {
         x
     }
 }
