@@ -1,6 +1,6 @@
 use ndarray::{array, Array, Array2};
-use ndarray_rand::RandomExt;
 use ndarray_rand::rand_distr::Uniform;
+use ndarray_rand::RandomExt;
 
 #[derive(Debug)]
 pub struct NeuralNet<T>
@@ -32,7 +32,10 @@ impl NeuralNet<fn(f64) -> f64> {
     pub fn new_rand(nodes: Vec<usize>) -> Self {
         let mut weights = Vec::new();
         for shape in nodes.windows(2) {
-            weights.push(Array2::<f64>::random((shape[1], shape[0]), Uniform::new(0., 3.)));
+            weights.push(Array2::<f64>::random(
+                (shape[1], shape[0]),
+                Uniform::new(0., 3.),
+            ));
         }
         let mut bias = Vec::new();
         for shape in &nodes[1..] {
