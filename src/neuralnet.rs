@@ -55,8 +55,8 @@ where
     T: Fn(f64) -> f64,
 {
     // TODO: Appropriately error if a network is invalid (wrong weight matrix shapes, for example).
+    /// Process the forward solution of the network given an input vector.
     pub fn solve_fwd(&self, input: Array2<f64>) -> Result<NetState, Box<dyn Error>> {
-        /// Process the forward solution of the network given an input vector.
         let mut all_activations: Vec<Array2<f64>> = Vec::new();
         let mut acts = input.clone();
         let num_weights = self.weights.len();
@@ -88,17 +88,17 @@ where
     }
 }
 
+/// Trait used to parse the inputs and outputs from a CSV record created by the csv crate.
 pub trait NetRecord {
-    /// Trait used to parse the inputs and outputs from a CSV record created by the csv crate.
     fn get_inputs(&self) -> Array2<f64>;
     fn get_outputs(&self) -> Array2<f64>;
 }
 
+/// Tracks the complete neural state of a neural network.
+///
+/// Returned by the solve_fwd function.
 #[derive(Debug)]
 pub struct NetState {
-    /// Tracks the complete neural state of a neural network.
-    ///
-    /// Returned by the solve_fwd function.
     input: Array2<f64>,
     activations: Vec<Array2<f64>>,
     output: Array2<f64>,
