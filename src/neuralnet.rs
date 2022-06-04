@@ -72,18 +72,29 @@ where
             };
             all_activations.push(acts.clone());
         }
-        all_activations.pop();
+        all_activations.pop(); //Don't need the output twice!
         Ok(NetState {
             input,
             activations: all_activations,
             output: acts,
         })
     }
+    /// Back-propagate the error from a training case and generate a new network with adjusted
+    /// weights.
     pub fn back_prop(
         &self,
-        input: Array2<f64>,
-        output: Array2<f64>,
-    ) -> Result<Vec<Array2<f64>>, Box<dyn Error>> {
+        mut state: NetState,
+        actual: Array2<f64>,
+    ) -> Result<Self, Box<dyn Error>> {
+        let mut activations = state.activations;
+        //Calculate the first layer:
+        let a_o = state.output;
+        let de_dao = a_o - actual;
+        let a_k: Array2<f64> = activations
+            .pop()
+            .ok_or_else(|| -> Box<dyn Error> { "Activation Vector empty!?".into() })?;
+        let de_dwok = de_dao.dot(&a_k.t());
+        println!("{:?}", de_dwok);
         Err("Backprop: STUB".into())
     }
 }
