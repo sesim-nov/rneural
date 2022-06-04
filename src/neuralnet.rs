@@ -1,6 +1,7 @@
 use ndarray::{array, Array, Array2};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
+use std::error::Error;
 
 #[derive(Debug)]
 pub struct NeuralNet<T>
@@ -70,11 +71,24 @@ where
         }
         Ok(acts)
     }
+    pub fn back_prop(&self, input: Array2<f64>, output: Array2<f64>) -> Result<Vec<Array2<f64>>, Box<dyn Error>> {
+        Err("Backprop: STUB".into())
+    }
 }
 
 pub trait NetRecord {
+    /// Trait used to parse the inputs and outputs from a CSV record created by the csv crate. 
     fn get_inputs(&self) -> Array2<f64>;
     fn get_outputs(&self) -> Array2<f64>;
+}
+
+struct NetState {
+    /// Tracks the complete neural state of a neural network. 
+    ///
+    /// Returned by the solve_fwd function. 
+    input: Array2<f64>,
+    activations: Vec<Array2<f64>>,
+    output: Array2<f64>,
 }
 
 #[cfg(test)]
