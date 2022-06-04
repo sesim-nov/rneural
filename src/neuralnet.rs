@@ -55,7 +55,9 @@ where
     T: Fn(f64) -> f64,
 {
     // TODO: Appropriately error if a network is invalid (wrong weight matrix shapes, for example).
-    pub fn solve_fwd(&self, input: Array2<f64>) -> Result<Array2<f64>, &str> {
+    pub fn solve_fwd(&self, input: Array2<f64>) -> Result<NetState, Box<dyn Error>> {
+        /// Process the forward solution of the network given an input vector.
+        let mut all_activations: Vec<Array2<f64>> = Vec::new();
         let mut acts = input.clone();
         let num_weights = self.weights.len();
         for (i, weight) in self.weights.iter().enumerate() {
@@ -68,24 +70,35 @@ where
                     unact.map(|x| (self.activation)(*x))
                 }
             };
+            all_activations.push(acts.clone());
         }
-        Ok(acts)
+        all_activations.pop();
+        Ok(NetState {
+            input,
+            activations: all_activations,
+            output: acts,
+        })
     }
-    pub fn back_prop(&self, input: Array2<f64>, output: Array2<f64>) -> Result<Vec<Array2<f64>>, Box<dyn Error>> {
+    pub fn back_prop(
+        &self,
+        input: Array2<f64>,
+        output: Array2<f64>,
+    ) -> Result<Vec<Array2<f64>>, Box<dyn Error>> {
         Err("Backprop: STUB".into())
     }
 }
 
 pub trait NetRecord {
-    /// Trait used to parse the inputs and outputs from a CSV record created by the csv crate. 
+    /// Trait used to parse the inputs and outputs from a CSV record created by the csv crate.
     fn get_inputs(&self) -> Array2<f64>;
     fn get_outputs(&self) -> Array2<f64>;
 }
 
-struct NetState {
-    /// Tracks the complete neural state of a neural network. 
+#[derive(Debug)]
+pub struct NetState {
+    /// Tracks the complete neural state of a neural network.
     ///
-    /// Returned by the solve_fwd function. 
+    /// Returned by the solve_fwd function.
     input: Array2<f64>,
     activations: Vec<Array2<f64>>,
     output: Array2<f64>,
