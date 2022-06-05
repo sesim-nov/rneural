@@ -61,19 +61,18 @@ fn run() -> Result<(), Box<dyn Error>> {
     let net = NeuralNet::new_rand(vec![13, 20, 10, 1]);
     for record in csvrdr.deserialize() {
         let record: HousePrice = record?;
-        println!(
-            "{:?}:{:?}",
-            record.get_outputs(),
-            net.solve_fwd(record.get_inputs())
-        )
+        let actual = record.get_outputs();
+        let pred_state = net.solve_fwd(record.get_inputs())?;
+        println!("Error:\n{}", &pred_state.output - &actual);
+        println!("Last Activation:\n{}", pred_state.activations[pred_state.activations.len() - 1]);
+        let back = net.back_prop(pred_state, actual)?;
     }
     Ok(())
 }
 
 fn main() {
     if let Err(e) = run() {
-        println!("{:?}", e);
-        std::process::exit(1);
+        panic!("{}", e);
     }
 }
 
