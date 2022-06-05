@@ -35,7 +35,7 @@ impl NeuralNet<fn(f64) -> f64> {
         for shape in nodes.windows(2) {
             weights.push(Array2::<f64>::random(
                 (shape[1], shape[0]),
-                Uniform::new(0., 3.),
+                Uniform::new(0., 1.),
             ));
         }
         let mut bias = Vec::new();
@@ -110,9 +110,9 @@ pub trait NetRecord {
 /// Returned by the solve_fwd function.
 #[derive(Debug)]
 pub struct NetState {
-    input: Array2<f64>,
-    activations: Vec<Array2<f64>>,
-    output: Array2<f64>,
+    pub input: Array2<f64>,
+    pub activations: Vec<Array2<f64>>,
+    pub output: Array2<f64>,
 }
 
 #[cfg(test)]
