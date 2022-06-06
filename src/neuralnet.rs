@@ -1,3 +1,4 @@
+use crate::activations::Activation;
 use ndarray::{array, Array, Array2};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
@@ -6,14 +7,14 @@ use std::error::Error;
 #[derive(Debug)]
 pub struct NeuralNet<T>
 where
-    T: Fn(f64) -> f64,
+    T: Activation,
 {
     pub weights: Vec<Array2<f64>>,
     pub bias: Vec<Array2<f64>>,
     pub activation: T,
 }
 
-impl NeuralNet<fn(f64) -> f64> {
+impl<T: Activation> NeuralNet<T> {
     // TODO: Maybe make all fields private and provided specified-weights constructor?
     pub fn new_ones(nodes: Vec<usize>) -> Self {
         let mut weights = Vec::new();
@@ -27,7 +28,7 @@ impl NeuralNet<fn(f64) -> f64> {
         NeuralNet {
             weights,
             bias,
-            activation: crate::activations::relu,
+            activation: T::new(),
         }
     }
     pub fn new_rand(nodes: Vec<usize>) -> Self {
@@ -45,14 +46,14 @@ impl NeuralNet<fn(f64) -> f64> {
         NeuralNet {
             weights,
             bias,
-            activation: crate::activations::relu,
+            activation: T::new(),
         }
     }
 }
 
 impl<T> NeuralNet<T>
 where
-    T: Fn(f64) -> f64,
+    T: Activation,
 {
     // TODO: Appropriately error if a network is invalid (wrong weight matrix shapes, for example).
     /// Process the forward solution of the network given an input vector.
@@ -67,7 +68,7 @@ where
                 if num_weights - 1 == i {
                     unact
                 } else {
-                    unact.map(|x| (self.activation)(*x))
+                    unact.map(|x| self.activation.act(*x))
                 }
             };
             all_activations.push(acts.clone());

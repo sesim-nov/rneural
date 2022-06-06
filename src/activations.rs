@@ -1,14 +1,15 @@
 use std::f64::consts::E as e;
 
-trait Activation {
-    fn act(x: f64) -> f64;
-    fn act_prime(x: f64) -> f64;
+pub trait Activation {
+    fn act(&self, x: f64) -> f64;
+    fn act_prime(&self, x: f64) -> f64;
+    fn new() -> Self;
 }
 
-struct Relu(());
+pub struct Relu;
 
 impl Activation for Relu {
-    fn act(x: f64) -> f64 {
+    fn act(&self, x: f64) -> f64 {
         ensure_finite(x);
         if x < 0.0 {
             0.0
@@ -17,13 +18,17 @@ impl Activation for Relu {
         }
     }
 
-    fn act_prime(x: f64) -> f64 {
+    fn act_prime(&self, x: f64) -> f64 {
         ensure_finite(x);
         if x <= 0.0 {
             0.0
         } else {
             1.0
         }
+    }
+
+    fn new() -> Self {
+        Self
     }
 }
 

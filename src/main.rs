@@ -8,6 +8,7 @@
 
 use ndarray::{array, Array2};
 use rneural::neuralnet::{NetRecord, NeuralNet};
+use rneural::activations::Relu;
 use serde::Deserialize;
 use std::env;
 use std::error::Error;
@@ -58,7 +59,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     let path = get_first_arg()?;
     let file = File::open(path)?;
     let mut csvrdr = csv::ReaderBuilder::new().delimiter(b',').from_reader(file);
-    let net = NeuralNet::new_rand(vec![13, 20, 10, 1]);
+    let net: NeuralNet::<Relu> = NeuralNet::new_rand(vec![13, 20, 10, 1]);
     for record in csvrdr.deserialize() {
         let record: HousePrice = record?;
         let actual = record.get_outputs();
