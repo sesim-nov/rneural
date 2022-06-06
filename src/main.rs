@@ -93,7 +93,7 @@ mod tests {
         let net = NeuralNet {
             weights: vec![array![[1.0, 2.0], [3.0, 4.0]]],
             bias: vec![array![[1.0], [1.0]]],
-            activation: rneural::activations::relu,
+            activation: rneural::activations::Relu,
         };
     }
 }

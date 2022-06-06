@@ -1,4 +1,4 @@
-use crate::activations::Activation;
+use crate::activations::{Activation, Relu};
 use ndarray::{array, Array, Array2};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
@@ -121,7 +121,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_new() {
-        let new = NeuralNet::new_ones(vec![3, 4, 4, 1]);
+        let new: NeuralNet::<Relu> = NeuralNet::new_ones(vec![3, 4, 4, 1]);
         assert_eq!(new.weights[0].shape(), &[4, 3]);
         assert_eq!(new.weights[1].shape(), &[4, 4]);
         assert_eq!(new.weights[2].shape(), &[1, 4]);
@@ -134,10 +134,10 @@ mod tests {
         let net = NeuralNet {
             weights: vec![array![[1.0, 1.0], [2.0, 2.0]], array![[1.0, 1.0]]],
             bias: vec![array![[0.0], [0.0]], array![[0.0]]],
-            activation: crate::activations::relu,
+            activation: crate::activations::Relu,
         };
         let inputs = array![[3.0], [4.0]];
-        let soln = net.solve_fwd(inputs);
-        assert_eq!(soln, Ok(array![[21.0]]))
+        let soln = net.solve_fwd(inputs).unwrap();
+        assert_eq!(soln.output, array![[21.0]])
     }
 }
