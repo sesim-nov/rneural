@@ -95,6 +95,10 @@ where
             .pop()
             .ok_or_else(|| -> Box<dyn Error> { "Activation Vector empty!?".into() })?;
         let de_dwok = de_dao.dot(&a_k.t());
+        for a_j in activations {
+            //
+            // do the thing!
+        }
         println!("{:?}", de_dwok);
         Err("Backprop: STUB".into())
     }
