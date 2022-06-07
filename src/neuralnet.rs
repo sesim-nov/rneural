@@ -87,7 +87,10 @@ where
         mut state: NetState,
         actual: Array2<f64>,
     ) -> Result<Self, Box<dyn Error>> {
-        let mut activations = state.activations;
+        //build activation vector by prepending the inputs. 
+        let mut activations = vec![state.input.clone()];
+        activations.append(&mut state.activations);
+        let len_wts = self.weights.len();
         //Calculate the first layer:
         let a_o = state.output;
         let de_dao = a_o - actual;
@@ -95,9 +98,11 @@ where
             .pop()
             .ok_or_else(|| -> Box<dyn Error> { "Activation Vector empty!?".into() })?;
         let de_dwok = de_dao.dot(&a_k.t());
-        for a_j in activations {
+        for (i,a_j) in activations.iter().rev().enumerate() {
             //
             // do the thing!
+            let wt_ndx = len_wts - i - 2;
+            println!("Processing weight matrix w_{}", wt_ndx);
         }
         println!("{:?}", de_dwok);
         Err("Backprop: STUB".into())
