@@ -85,10 +85,10 @@ where
     /// weights.
     ///
     /// ## TODO
-    ///     * Track the most recent partial derivative w.r.t activation (dE/dA_l) between cycles.
-    ///     Use the mutable variable already declared. 
-    ///     * Track the most recent weight matrix (w_lk) between cycles. Maybe using an index
-    ///     offset?
+    /// * Track the most recent partial derivative w.r.t activation (dE/dA_l) between cycles.
+    /// Use the mutable variable already declared. 
+    /// * Track the most recent weight matrix (w_lk) between cycles. Maybe using an index
+    /// offset?
     pub fn back_prop(
         &self,
         mut state: NetState,
