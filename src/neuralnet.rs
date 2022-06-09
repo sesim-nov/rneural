@@ -109,7 +109,7 @@ where
                 .ok_or_else(|| -> Box<dyn Error> {"Invalid Weight Index".into()})?;
             let unact = w_kj.dot(a_j);
             let dak_dwkj = unact.map(|x| self.activation.act_prime(*x)).dot(&a_j.t());
-            let de_dak = 42069
+            let de_dak = 42069;
         }
         println!("{:?}", de_dwok);
         Err("Backprop: STUB".into())
