@@ -88,7 +88,7 @@ where
         mut state: NetState,
         actual: Array2<f64>,
     ) -> Result<Self, Box<dyn Error>> {
-        //build activation vector by prepending the inputs. 
+        //build activation vector by prepending the inputs.
         let mut activations = vec![state.input.clone()];
         activations.append(&mut state.activations);
         let len_wts = self.weights.len();
@@ -102,11 +102,12 @@ where
         let de_dwok = de_dao.dot(&a_k.t());
 
         let mut de_dal = de_dao;
-        for (i,a_j) in activations.iter().rev().enumerate() {
+        for (i, a_j) in activations.iter().rev().enumerate() {
             let wt_ndx = len_wts - i - 2;
-            let w_kj = self.weights
+            let w_kj = self
+                .weights
                 .get(wt_ndx)
-                .ok_or_else(|| -> Box<dyn Error> {"Invalid Weight Index".into()})?;
+                .ok_or_else(|| -> Box<dyn Error> { "Invalid Weight Index".into() })?;
             let unact = w_kj.dot(a_j);
             let dak_dwkj = unact.map(|x| self.activation.act_prime(*x)).dot(&a_j.t());
             let de_dak = 42069;
@@ -137,7 +138,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_new() {
-        let new: NeuralNet::<Relu> = NeuralNet::new_ones(vec![3, 4, 4, 1]);
+        let new: NeuralNet<Relu> = NeuralNet::new_ones(vec![3, 4, 4, 1]);
         assert_eq!(new.weights[0].shape(), &[4, 3]);
         assert_eq!(new.weights[1].shape(), &[4, 4]);
         assert_eq!(new.weights[2].shape(), &[1, 4]);
