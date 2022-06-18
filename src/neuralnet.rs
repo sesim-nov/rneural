@@ -123,8 +123,8 @@ where
                 .ok_or_else(|| -> Box<dyn Error> { "Invalid Weight Index".into() })?;
             let unact = w_kj.dot(a_j);
             let dak_dwkj = unact.map(|x| self.activation.act_prime(*x)).dot(&a_j.t());
-            let de_dak = de_dal.t().dot(dal_dak);
-            let de_dwkj = de_dak.dot(&dak_dwkj);
+            let de_dak = dal_dak.t().dot(&de_dal);
+            let de_dwkj = de_dak.t().dot(&dak_dwkj);
             dal_dak = w_kj;
             de_dal = de_dak.clone();
             println!("de_dwkj: {:?} * {:?} = {:?}", de_dak.shape(), dak_dwkj.shape(), de_dwkj.shape());
