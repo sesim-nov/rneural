@@ -100,15 +100,22 @@ where
         let len_wts = self.weights.len();
 
         //Calculate the first layer:
+        //TODO: There's something wrong with DE-DAL. It should wind up being a matrix i think for
+        //multiple outputs but it doesn't get there. Worth investigating. 
         let a_o = state.output;
-        let de_dao = a_o - actual;
+        let de_dao = a_o - actual; 
         let a_k: Array2<f64> = activations
             .pop()
             .ok_or_else(|| -> Box<dyn Error> { "Activation Vector empty!?".into() })?;
         let de_dwok = de_dao.dot(&a_k.t());
 
         let mut de_dal = de_dao;
+        let mut dal_dak = self.weights.last().expect("Weights vector empty!?");
+        println!("ENTER LOOP");
         for (i, a_j) in activations.iter().rev().enumerate() {
+            println!("***Loop {}***", i);
+            println!("de_dal: {:?}", de_dal.shape());
+            println!("dal_dak: {:?}", dal_dak.shape());
             let wt_ndx = len_wts - i - 2;
             let w_kj = self
                 .weights
@@ -116,7 +123,12 @@ where
                 .ok_or_else(|| -> Box<dyn Error> { "Invalid Weight Index".into() })?;
             let unact = w_kj.dot(a_j);
             let dak_dwkj = unact.map(|x| self.activation.act_prime(*x)).dot(&a_j.t());
-            let de_dak = 42069;
+            let de_dak = de_dal.t().dot(dal_dak);
+            let de_dwkj = de_dak.dot(&dak_dwkj);
+            dal_dak = w_kj;
+            de_dal = de_dak.clone();
+            println!("de_dwkj: {:?} * {:?} = {:?}", de_dak.shape(), dak_dwkj.shape(), de_dwkj.shape());
+            println!("de_dak: {:?}", de_dak.shape());
         }
         println!("{:?}", de_dwok);
         Err("Backprop: STUB".into())
